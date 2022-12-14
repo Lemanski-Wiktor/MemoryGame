@@ -13,6 +13,12 @@ class ViewController2: UIViewController {
     
     var level = 0
     var isHorizontal = false
+    var widthScreen = 0
+    var heightScreen = 0
+    var sizeCard = 0
+    var navBarSize = 64
+    var blankPlaces = 0
+    
     var easyImgs: ArraySlice<String> = []
     var hardImgs: Array<String> = []
     var numOfActiveCards = 0
@@ -33,6 +39,13 @@ class ViewController2: UIViewController {
         }
         images.shuffle()
         
+        let screenSize: CGRect = UIScreen.main.bounds
+        widthScreen = Int(screenSize.width)
+        heightScreen = Int(screenSize.height)
+        
+        print("width: \(widthScreen), height: \(heightScreen)")
+        print((heightScreen-64)/4)
+        
         var tag = 0
         if(level == 0){
             easyImgs = images[0...5]
@@ -43,9 +56,11 @@ class ViewController2: UIViewController {
                 for j in 0..<3{
                     tag+=1
                     if(!isHorizontal){
-                        createSquare(x: i,y: j,size: 187, tag: tag)
+                        sizeCard = widthScreen/4
+                        createSquare(x: i,y: j,size: sizeCard, tag: tag)
                     }else{
-                        createSquare(x: i,y: j,size: 206, tag:tag)
+                        sizeCard = (heightScreen-64-8)/3
+                        createSquare(x: i,y: j,size: sizeCard, tag:tag)
                     }
                 }
             }
@@ -58,7 +73,8 @@ class ViewController2: UIViewController {
                 for j in 0..<4{
                     tag+=1
                     if(!isHorizontal){
-                        createSquare(x: i,y: j,size: 104, tag: tag)
+                        sizeCard = (widthScreen-40)/7
+                        createSquare(x: i,y: j,size: sizeCard, tag: tag)
                     }else{
                         createSquare(x: i,y: j,size: 144, tag:tag)
                     }
@@ -96,7 +112,7 @@ class ViewController2: UIViewController {
                 if(tmp1 == tmp2){
                     numOfMoves += 1
                     
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         
                         self.activeCardsBtns[0].setBackgroundImage(UIImage(named: "mark.png"), for: UIControl.State.normal)
                         self.activeCardsBtns[0].isUserInteractionEnabled = true
@@ -147,14 +163,17 @@ class ViewController2: UIViewController {
         
         if(level==0){
             if(!isHorizontal){
-                button.frame = CGRect(x: x*size+4*(x+1), y: y*size+259+4*(y+1), width: size, height: size)
+                button.frame = CGRect(x: x*size, y: y*size+256, width: size, height: size)
             }else{
-                button.frame = CGRect(x: x*size+40*(x+1), y: y*size+24+40*(y+1), width: size, height: size)
+                blankPlaces = widthScreen - 4*sizeCard - 10
+                button.frame = CGRect(x: x*size+2*(x+1)+blankPlaces/2, y: y*size+navBarSize+2*(y+1), width: size, height: size)
             }
         }else if(level==1){
             if(!isHorizontal){
                 button.frame = CGRect(x: x*size+5*(x+1), y: y*size+328+5*(y+1), width: size, height: size)
             }else{
+                blankPlaces = widthScreen - 7*sizeCard - 40
+                print(blankPlaces)
                 button.frame = CGRect(x: x*size+2*(x+1), y: y*size+128+2*(y+1), width: size, height: size)
             }
         }
@@ -186,7 +205,11 @@ class ViewController2: UIViewController {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
+        let screenSize: CGRect = UIScreen.main.bounds
+        widthScreen = Int(screenSize.width)
+        heightScreen = Int(screenSize.height)
         isHorizontal = UIDevice.current.orientation.isLandscape
+        print("width: \(widthScreen), height: \(heightScreen)")
         
         var tag = 0
         if(level == 0){
@@ -194,11 +217,13 @@ class ViewController2: UIViewController {
                 for j in 0..<3{
                     tag+=1
                     if(!isHorizontal){
+                        sizeCard = widthScreen/4
                         removeButton(tag: tag)
-                        createSquare(x: i,y: j,size: 187, tag: tag)
+                        createSquare(x: i,y: j,size: sizeCard, tag: tag)
                     }else{
+                        sizeCard = (heightScreen-64-8)/3
                         removeButton(tag: tag)
-                        createSquare(x: i,y: j,size: 206, tag:tag)
+                        createSquare(x: i,y: j,size: sizeCard, tag:tag)
                     }
                     
                 }
@@ -208,8 +233,9 @@ class ViewController2: UIViewController {
                 for j in 0..<4{
                     tag+=1
                     if(!isHorizontal){
+                        sizeCard = (widthScreen-40)/7
                         removeButton(tag: tag)
-                        createSquare(x: i,y: j,size: 104, tag: tag)
+                        createSquare(x: i,y: j,size: sizeCard, tag: tag)
                     }else{
                         removeButton(tag: tag)
                         createSquare(x: i,y: j,size: 144, tag:tag)
